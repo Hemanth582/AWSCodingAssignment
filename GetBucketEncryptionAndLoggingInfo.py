@@ -22,24 +22,30 @@ def ListAllS3Buckets(client):
 #This method check the Bucket encryption and log details
 def GetBucketEncryptionStatus(client,s3BucketList):
 
-    for buckets in s3BucketList:
-        response = client.get_bucket_encryption(
-            Bucket=buckets,
-        )
-        
-        for resp in response['ServerSideEncryptionConfiguration']['Rules']:
-            print(resp)
-            for key, value in resp.items():
-                print(key, '->', value)
+    
+    for bucketName in s3BucketList:
 
-        response = client.get_bucket_logging(
-            Bucket=buckets,
-        )
-        
+        try:
 
-###############
+            response = client.get_bucket_encryption(
+                Bucket=bucketName,
+            )
+            
+            for resp in response['ServerSideEncryptionConfiguration']['Rules']:
+                for key, value in resp.items():
+                    print(key, '->', value)
+
+            response = client.get_bucket_logging(
+                Bucket=bucketName,
+            )
+            
+        except botocore.exceptions.ClientError as e:
+            print("This Bucket doesn't have encryption")
+
+
+####################
 #Main Method 
-###############
+####################
 def Main():
 
     client = boto3.client('s3')
