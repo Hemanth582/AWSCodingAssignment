@@ -22,37 +22,40 @@ def ListAllS3Buckets(client):
 #This method Get the all S3 buckets policies and ACL
 def GetAllBucketPolicyAndACL(client,s3BucketList):
 
-    try:
+    for bucketName in s3BucketList:
 
-        response = client.get_bucket_policy_status(Bucket='sai-test-poc123',)
-        #print(response)
-        status = response['PolicyStatus']['IsPublic']
-        print(status)
-        if(status == 'True'):
-            print("this bucket is public")
-        else:
-            print("this bucket is private")
+        try:
 
-    except botocore.exceptions.ClientError as e:
-        print("This Bucket doesn't have Policy....")
+            print("Bucket Name:: ",bucketName)
+            response = client.get_bucket_policy_status(Bucket=bucketName,)
+            #print(response)
+            status = response['PolicyStatus']['IsPublic']
+            print(status)
+            if(status == 'True'):
+                print("this bucket is public")
+            else:
+                print("this bucket is private")
 
-    try:
+        except botocore.exceptions.ClientError as e:
+            print("This Bucket doesn't have Policy....")
 
-        response = client.get_public_access_block(Bucket='sai-test-poc123')
-        #print(response)
-        acl = response['PublicAccessBlockConfiguration']['BlockPublicAcls']
-        blockPublicPolicy =response['PublicAccessBlockConfiguration']['BlockPublicPolicy']
-        restrictPublicBuckets = response['PublicAccessBlockConfiguration']['RestrictPublicBuckets']
-        ignorePublicacl = response['PublicAccessBlockConfiguration']['IgnorePublicAcls']
+        try:
 
-        print("ACL Rule :: block public access control lists ::" ,acl)
-        print("Block Public Policy:: ",blockPublicPolicy)
-        print("RestrictPublicBuckets is:: ",restrictPublicBuckets)
-        print("ignore public ACLs for this bucket:: ",ignorePublicacl)
-        
+            response = client.get_public_access_block(Bucket=bucketName)
+            #print(response)
+            acl = response['PublicAccessBlockConfiguration']['BlockPublicAcls']
+            blockPublicPolicy =response['PublicAccessBlockConfiguration']['BlockPublicPolicy']
+            restrictPublicBuckets = response['PublicAccessBlockConfiguration']['RestrictPublicBuckets']
+            ignorePublicacl = response['PublicAccessBlockConfiguration']['IgnorePublicAcls']
 
-    except botocore.exceptions.ClientError as e:
-        print("This Bucket doesn't have Policy")
+            print("ACL Rule :: block public access control lists ::" ,acl)
+            print("Block Public Policy:: ",blockPublicPolicy)
+            print("RestrictPublicBuckets is:: ",restrictPublicBuckets)
+            print("ignore public ACLs for this bucket:: ",ignorePublicacl)
+            
+
+        except botocore.exceptions.ClientError as e:
+            print("This Bucket doesn't have Policy")
 
 
 ###############
